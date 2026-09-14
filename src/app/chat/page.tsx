@@ -10,14 +10,27 @@ import {
   deleteConversation,
   appendOptimisticUserMessage,
 } from '@/store/features/chat-slice';
-import { setAuthModalOpen } from '@/store/features/auth-slice';
-import { Bot, Send, Plus, Trash2, MessageSquare, Loader2, Sparkles } from 'lucide-react';
+import {
+  Bot,
+  Send,
+  Plus,
+  Trash2,
+  MessageSquare,
+  Loader2,
+  Sparkles,
+  PanelLeftClose,
+  PanelLeftOpen,
+  X,
+} from 'lucide-react';
 
 export default function ChatPage() {
   const dispatch = useAppDispatch();
-  const { conversations, currentMessages, activeConversationId, sendingMessage } = useAppSelector((state) => state.chat);
+  const { conversations, currentMessages, activeConversationId, sendingMessage } = useAppSelector(
+    (state) => state.chat
+  );
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [inputMessage, setInputMessage] = useState('');
+  const [showHistoryMobile, setShowHistoryMobile] = useState(false);
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,12 +47,7 @@ export default function ChatPage() {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
-    if (!isAuthenticated) {
-      dispatch(setAuthModalOpen(true));
-      return;
-    }
-
-    const text = inputMessage;
+    const text = inputMessage.trim();
     setInputMessage('');
     dispatch(appendOptimisticUserMessage(text));
     await dispatch(sendMessage({ message: text, conversationId: activeConversationId }));
@@ -47,18 +55,44 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-[#070b14] overflow-hidden">
-      {/* Conversations Sidebar */}
-      <aside className="w-80 border-r border-slate-800 bg-[#090e1c] flex flex-col">
+    <div className="flex h-[calc(100vh-4rem)] bg-[#070b14] overflow-hidden relative">
+      {/* Mobile History Backdrop */}
+      {showHistoryMobile && (
+        <div
+          onClick={() => setShowHistoryMobile(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-20 md:hidden"
+        />
+      )}
+
+      {/* Conversations Sidebar (Desktop & Mobile Drawer) */}
+      <aside
+        className={`w-72 sm:w-80 border-r border-slate-800 bg-[#090e1c] flex flex-col z-20 transition-all duration-300 md:relative fixed inset-y-0 left-0 ${
+          showHistoryMobile ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
         <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-200">Conversations</h2>
-          <button
-            onClick={() => dispatch(startNewConversation())}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>New Chat</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-cyan-400" />
+            <h2 className="text-sm font-semibold text-slate-200">Conversations</h2>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                dispatch(startNewConversation());
+                setShowHistoryMobile(false);
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>New</span>
+            </button>
+            <button
+              onClick={() => setShowHistoryMobile(false)}
+              className="p-1 text-slate-400 hover:text-white md:hidden"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
@@ -72,20 +106,23 @@ export default function ChatPage() {
             </div>
           ) : (
             conversations.data.map((c) => {
-              const cid = c.id || c._id || '';
+              const cid = c._id || c.id || '';
               const isActive = activeConversationId === cid;
               return (
                 <div
                   key={cid}
-                  onClick={() => dispatch(fetchConversationById(cid))}
-                  className={`flex items-center justify-between p-2.5 rounded-lg text-xs cursor-pointer group transition-all ${
+                  onClick={() => {
+                    dispatch(fetchConversationById(cid));
+                    setShowHistoryMobile(false);
+                  }}
+                  className={`flex items-center justify-between p-2.5 rounded-xl text-xs cursor-pointer group transition-all ${
                     isActive
-                      ? 'bg-slate-800 text-cyan-300 border border-cyan-500/30 shadow-sm'
+                      ? 'bg-slate-800/90 text-cyan-300 border border-cyan-500/30 shadow-sm'
                       : 'text-slate-400 hover:bg-slate-900/60 hover:text-slate-200'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <MessageSquare className="w-4 h-4 text-cyan-500 flex-shrink-0" />
+                    <MessageSquare className="w-3.5 h-3.5 text-cyan-500 flex-shrink-0" />
                     <span className="truncate">{c.title || `Chat ${cid.substring(0, 8)}`}</span>
                   </div>
                   <button
@@ -106,24 +143,42 @@ export default function ChatPage() {
       </aside>
 
       {/* Main Chat Workspace */}
-      <main className="flex-1 flex flex-col bg-gradient-to-b from-[#070b14] to-[#0a101f]">
+      <main className="flex-1 flex flex-col bg-gradient-to-b from-[#070b14] to-[#0a101f] min-w-0">
+        {/* Mobile History Toggle Header */}
+        <div className="md:hidden flex items-center justify-between px-4 py-2 border-b border-slate-800/80 bg-[#090e1c]/60">
+          <button
+            onClick={() => setShowHistoryMobile(true)}
+            className="flex items-center gap-2 text-xs text-slate-400 hover:text-cyan-400"
+          >
+            <PanelLeftOpen className="w-4 h-4" />
+            <span>Chat History</span>
+          </button>
+          <button
+            onClick={() => dispatch(startNewConversation())}
+            className="text-xs text-cyan-400 flex items-center gap-1"
+          >
+            <Plus className="w-3 h-3" />
+            <span>New Chat</span>
+          </button>
+        </div>
+
         {/* Messages Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           {currentMessages.data.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-3">
+            <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-3 p-4">
               <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-lg shadow-cyan-500/10">
                 <Bot className="w-7 h-7" />
               </div>
               <h3 className="text-base font-semibold text-slate-200">How can Gemini assist you today?</h3>
               <p className="text-xs text-slate-400">
-                Type your prompt below to start a conversational turn. All chat history will be preserved per conversation ID.
+                Type your prompt below to start a conversational turn. All chat history is preserved per conversation ID.
               </p>
-              <div className="grid grid-cols-2 gap-2 w-full pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full pt-4">
                 {['What is LangChain?', 'Draft an async NestJS controller', 'Explain RAG architecture', 'Write unit test for Redux slice'].map((hint) => (
                   <button
                     key={hint}
                     onClick={() => setInputMessage(hint)}
-                    className="text-left p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 text-xs text-slate-300 hover:text-cyan-300 transition-all"
+                    className="text-left p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 text-xs text-slate-300 hover:text-cyan-300 transition-all"
                   >
                     {hint}
                   </button>
@@ -131,29 +186,32 @@ export default function ChatPage() {
               </div>
             </div>
           ) : (
-            currentMessages.data.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`flex gap-3 max-w-3xl ${
-                  msg.role === 'user' ? 'ml-auto justify-end' : 'mr-auto justify-start'
-                }`}
-              >
-                {msg.role === 'assistant' && (
-                  <div className="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 flex-shrink-0 mt-1">
-                    <Bot className="w-4 h-4" />
-                  </div>
-                )}
+            currentMessages.data.map((msg, idx) => {
+              const isUser = msg.role === 'user' || msg.role === 'human';
+              return (
                 <div
-                  className={`p-4 rounded-2xl text-sm leading-relaxed ${
-                    msg.role === 'user'
-                      ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-md'
-                      : 'bg-slate-900/90 border border-slate-800 text-slate-200 shadow-sm whitespace-pre-wrap'
+                  key={idx}
+                  className={`flex gap-3 max-w-3xl ${
+                    isUser ? 'ml-auto justify-end' : 'mr-auto justify-start'
                   }`}
                 >
-                  {msg.content}
+                  {!isUser && (
+                    <div className="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 flex-shrink-0 mt-1">
+                      <Bot className="w-4 h-4" />
+                    </div>
+                  )}
+                  <div
+                    className={`p-4 rounded-2xl text-sm leading-relaxed ${
+                      isUser
+                        ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-md'
+                        : 'bg-slate-900/90 border border-slate-800 text-slate-200 shadow-sm whitespace-pre-wrap'
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
 
           {sendingMessage && (
@@ -186,7 +244,7 @@ export default function ChatPage() {
               className="px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-medium text-sm flex items-center gap-2 disabled:opacity-50 transition-all shadow-md shadow-cyan-500/20"
             >
               <Send className="w-4 h-4" />
-              <span>Send</span>
+              <span className="hidden sm:inline">Send</span>
             </button>
           </form>
         </div>

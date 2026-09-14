@@ -3,8 +3,8 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { checkHealth } from '@/store/features/health-slice';
-import { setAuthModalOpen, setAuthModalMode, logout } from '@/store/features/auth-slice';
-import { LogIn, LogOut, User, Activity } from 'lucide-react';
+import { toggleSidebar, logout } from '@/store/features/auth-slice';
+import { LogOut, User, Activity, Menu } from 'lucide-react';
 
 export const TopHeader = () => {
   const dispatch = useAppDispatch();
@@ -18,12 +18,21 @@ export const TopHeader = () => {
   }, [dispatch]);
 
   return (
-    <header className="h-16 border-b border-slate-800/80 bg-[#0b101c]/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-20">
-      {/* Backend Status Badge */}
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-900/80 border border-slate-800">
+    <header className="h-16 border-b border-slate-800/80 bg-[#0b101c]/80 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20">
+      {/* Left: Sidebar Toggle Hamburger + Backend Status Badge */}
+      <div className="flex items-center gap-3 sm:gap-4">
+        <button
+          onClick={() => dispatch(toggleSidebar())}
+          className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors"
+          title="Toggle Sidebar"
+          aria-label="Toggle Sidebar"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900/80 border border-slate-800">
           <Activity className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-400">Backend API:</span>
+          <span className="hidden sm:inline text-slate-400">Backend API:</span>
           <span className="flex items-center gap-1.5">
             <span
               className={`w-2 h-2 rounded-full ${
@@ -37,10 +46,10 @@ export const TopHeader = () => {
             <span
               className={
                 healthStatus === 'online'
-                  ? 'text-emerald-400 font-medium'
+                  ? 'text-emerald-400 font-medium font-mono text-[11px]'
                   : healthStatus === 'checking'
-                  ? 'text-amber-400'
-                  : 'text-rose-400'
+                  ? 'text-amber-400 font-mono text-[11px]'
+                  : 'text-rose-400 font-mono text-[11px]'
               }
             >
               {healthStatus.toUpperCase()}
@@ -49,42 +58,23 @@ export const TopHeader = () => {
         </div>
       </div>
 
-      {/* User Controls */}
+      {/* Right: Authenticated User Controls */}
       <div className="flex items-center gap-3">
-        {isAuthenticated ? (
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">
-              <User className="w-3.5 h-3.5 text-cyan-400" />
-              <span>{user?.email || 'Authenticated User'}</span>
+        {isAuthenticated && (
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 max-w-[200px] sm:max-w-[280px]">
+              <div className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center flex-shrink-0">
+                <User className="w-3 h-3 text-cyan-400" />
+              </div>
+              <span className="truncate">{user?.email || 'Authenticated User'}</span>
             </div>
             <button
               onClick={() => dispatch(logout())}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 hover:border-rose-500/40 transition-all"
+              title="Logout"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Logout</span>
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                dispatch(setAuthModalMode('login'));
-                dispatch(setAuthModalOpen(true));
-              }}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => {
-                dispatch(setAuthModalMode('register'));
-                dispatch(setAuthModalOpen(true));
-              }}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-md shadow-cyan-500/20 transition-all"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              <span>Register</span>
+              <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         )}

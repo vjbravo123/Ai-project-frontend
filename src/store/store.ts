@@ -4,6 +4,7 @@ import chatReducer from './features/chat-slice';
 import visionReducer from './features/vision-slice';
 import newsAgentReducer from './features/news-agent-slice';
 import healthReducer from './features/health-slice';
+import revisionReducer from './features/revision-slice';
 
 export const store = configureStore({
   reducer: {
@@ -12,10 +13,11 @@ export const store = configureStore({
     vision: visionReducer,
     newsAgent: newsAgentReducer,
     health: healthReducer,
+    revision: revisionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // Prevents errors with file objects/blobs in actions (e.g. Vision uploads)
+      serializableCheck: false, // Prevents errors with file objects/blobs in actions (e.g. Vision/Audio uploads)
     }),
 });
 

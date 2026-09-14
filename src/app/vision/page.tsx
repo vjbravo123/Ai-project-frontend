@@ -3,7 +3,6 @@
 import React, { useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { describeImage, setImagePreview, setVisionInstruction, resetVisionState } from '@/store/features/vision-slice';
-import { setAuthModalOpen } from '@/store/features/auth-slice';
 import { UploadCloud, Image as ImageIcon, Sparkles, Copy, Check, Loader2, RotateCcw } from 'lucide-react';
 
 export default function VisionPage() {
@@ -11,7 +10,6 @@ export default function VisionPage() {
   const { imagePreviewUrl, instruction, resultDescription, isLoading, error } = useAppSelector(
     (state) => state.vision
   );
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [copied, setCopied] = useState(false);
@@ -27,10 +25,6 @@ export default function VisionPage() {
   };
 
   const handleRunVision = () => {
-    if (!isAuthenticated) {
-      dispatch(setAuthModalOpen(true));
-      return;
-    }
     if (!selectedFile) return;
     dispatch(describeImage({ file: selectedFile, instruction }));
   };
@@ -43,14 +37,14 @@ export default function VisionPage() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           <ImageIcon className="w-6 h-6 text-cyan-400" />
           <span>Multimodal Vision Studio</span>
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-xs sm:text-sm text-slate-400 mt-1">
           Upload any PNG, JPEG, WebP or HEIC image and query Google Gemini Vision models with custom prompt instructions.
         </p>
       </div>
@@ -60,7 +54,7 @@ export default function VisionPage() {
         <div className="space-y-6">
           <div
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all flex flex-col items-center justify-center min-h-[280px] ${
+            className={`border-2 border-dashed rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all flex flex-col items-center justify-center min-h-[280px] ${
               imagePreviewUrl
                 ? 'border-cyan-500/40 bg-slate-900/40'
                 : 'border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/20'
@@ -78,9 +72,9 @@ export default function VisionPage() {
                 <img
                   src={imagePreviewUrl}
                   alt="Preview"
-                  className="max-h-64 rounded-xl object-contain shadow-lg"
+                  className="max-h-64 rounded-2xl object-contain shadow-lg"
                 />
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-xl transition-opacity text-xs text-white">
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-2xl transition-opacity text-xs text-white">
                   Click to replace image
                 </div>
               </div>
@@ -105,7 +99,7 @@ export default function VisionPage() {
               value={instruction}
               onChange={(e) => dispatch(setVisionInstruction(e.target.value))}
               placeholder="e.g. Describe this for an alt-text tag"
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors"
             />
           </div>
 
@@ -132,7 +126,7 @@ export default function VisionPage() {
                 setSelectedFile(null);
                 dispatch(resetVisionState());
               }}
-              className="px-4 py-3 rounded-xl border border-slate-800 hover:bg-slate-900 text-slate-400 hover:text-slate-200 text-sm"
+              className="px-4 py-3 rounded-xl border border-slate-800 hover:bg-slate-900 text-slate-400 hover:text-slate-200 text-sm transition-colors"
               title="Reset"
             >
               <RotateCcw className="w-4 h-4" />
@@ -147,7 +141,7 @@ export default function VisionPage() {
         </div>
 
         {/* Right: AI Result Display */}
-        <div className="rounded-2xl border border-slate-800 bg-[#0c1222] p-6 flex flex-col justify-between">
+        <div className="rounded-3xl border border-slate-800 bg-[#0c1222] p-6 flex flex-col justify-between shadow-xl">
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <span className="text-xs font-mono uppercase tracking-wider text-cyan-400">
@@ -170,7 +164,7 @@ export default function VisionPage() {
                 <p className="text-xs text-slate-400 font-mono">Running multimodal inference...</p>
               </div>
             ) : resultDescription ? (
-              <div className="text-sm leading-relaxed text-slate-200 whitespace-pre-wrap font-sans bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+              <div className="text-sm leading-relaxed text-slate-200 whitespace-pre-wrap font-sans bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80">
                 {resultDescription}
               </div>
             ) : (

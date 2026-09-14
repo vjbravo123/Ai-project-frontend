@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Bot, Image, Newspaper, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
+import { Bot, Image as ImageIcon, Newspaper, BrainCircuit, Zap, ArrowRight, Sparkles } from 'lucide-react';
 
 export default function HomePage() {
   const cards = [
@@ -16,10 +16,10 @@ export default function HomePage() {
       textColor: 'text-cyan-400',
     },
     {
-      title: 'Multimodal Vision Inspector',
+      title: 'Multimodal Vision Studio',
       description: 'Zero-shot image analysis, visual alt-text generation, and complex scene descriptions.',
       href: '/vision',
-      icon: Image,
+      icon: ImageIcon,
       color: 'from-indigo-500/20 to-purple-500/20',
       border: 'border-indigo-500/30',
       textColor: 'text-indigo-400',
@@ -33,28 +33,38 @@ export default function HomePage() {
       border: 'border-fuchsia-500/30',
       textColor: 'text-fuchsia-400',
     },
+    {
+      title: 'Spaced-Repetition Revision',
+      description: 'Spoken and text study logging with SM-2 spaced repetition scheduling, understanding analysis, and due tracking.',
+      href: '/revision',
+      icon: BrainCircuit,
+      color: 'from-emerald-500/20 to-cyan-500/20',
+      border: 'border-emerald-500/30',
+      textColor: 'text-emerald-400',
+      badge: 'New Module',
+    },
   ];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-10">
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-[#0c1427] via-[#090d1a] to-[#070a14] p-10 shadow-2xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-8">
+      {/* Hero Banner */}
+      <div className="relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-[#0c1427] via-[#090d1a] to-[#070a14] p-6 sm:p-10 shadow-2xl">
         <div className="relative z-10 max-w-2xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/30">
             <Zap className="w-3.5 h-3.5" />
-            <span>Ready for NestJS + Gemini API</span>
+            <span>Connected to NestJS + Gemini API</span>
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
             Autonomous AI & Multi-turn Intelligence
           </h1>
-          <p className="text-sm text-slate-400 leading-relaxed">
-            All endpoints from your Hoppscotch collection are pre-wired: auto-token refresh, Redux state synchronization, file multipart uploads, and live workflow visualizers.
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            All endpoints from your Hoppscotch collection are pre-wired: 2-step OTP authentication, Gemini chat history, vision inspection, autonomous newsletter pipeline, and spaced-repetition revision study studio.
           </p>
         </div>
       </div>
 
       {/* Feature Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
@@ -64,16 +74,27 @@ export default function HomePage() {
               className={`p-6 rounded-2xl border ${card.border} bg-gradient-to-b ${card.color} hover:scale-[1.02] transition-all flex flex-col justify-between group shadow-lg`}
             >
               <div className="space-y-4">
-                <div className={`w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center ${card.textColor}`}>
-                  <Icon className="w-6 h-6" />
+                <div className="flex items-center justify-between">
+                  <div
+                    className={`w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center ${card.textColor}`}
+                  >
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  {card.badge && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      {card.badge}
+                    </span>
+                  )}
                 </div>
                 <h3 className="font-semibold text-white text-base group-hover:text-cyan-300 transition-colors">
                   {card.title}
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{card.description}</p>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  {card.description}
+                </p>
               </div>
               <div className="flex items-center gap-2 text-xs font-medium text-cyan-400 mt-6 group-hover:translate-x-1 transition-transform">
-                <span>Launch Tool</span>
+                <span>Launch Studio</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </Link>

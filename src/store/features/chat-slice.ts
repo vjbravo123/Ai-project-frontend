@@ -3,13 +3,14 @@ import apiClient from '@/lib/apiClient';
 
 export interface ChatMessage {
   id?: string;
-  role: 'user' | 'assistant';
+  _id?: string;
+  role: 'user' | 'assistant' | 'human' | 'ai';
   content: string;
   createdAt?: string;
 }
 
 export interface ConversationItem {
-  id: string;
+  id?: string;
   _id?: string;
   title?: string;
   createdAt: string;
@@ -108,8 +109,8 @@ const chatSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // fetchConversations
     builder
-      // fetchConversations
       .addCase(fetchConversations.pending, (state) => {
         state.conversations.isLoading = true;
         state.conversations.error = null;
@@ -134,12 +135,18 @@ const chatSlice = createSlice({
         state.currentMessages.isLoading = false;
         state.activeConversationId = action.payload.conversationId;
         const raw = action.payload.data;
-        const messages = Array.isArray(raw?.messages)
+        const rawMessages = Array.isArray(raw?.messages)
           ? raw.messages
           : Array.isArray(raw)
           ? raw
           : [];
-        state.currentMessages.data = messages;
+        // Normalize backend role 'human' -> 'user', 'ai' -> 'assistant'
+        state.currentMessages.data = rawMessages.map((m: any) => ({
+          id: m._id || m.id,
+          role: (m.role === 'human' || m.role === 'user') ? 'user' : 'assistant',
+          content: m.content,
+          createdAt: m.createdAt,
+        }));
       })
       .addCase(fetchConversationById.rejected, (state, action) => {
         state.currentMessages.isLoading = false;
@@ -165,7 +172,7 @@ const chatSlice = createSlice({
       // deleteConversation
       .addCase(deleteConversation.fulfilled, (state, action) => {
         state.conversations.data = state.conversations.data.filter(
-          (c) => (c.id || c._id) !== action.payload
+          (c) => (c._id || c.id) !== action.payload
         );
         if (state.activeConversationId === action.payload) {
           state.activeConversationId = null;
