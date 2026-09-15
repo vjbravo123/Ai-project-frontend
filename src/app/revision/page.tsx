@@ -13,14 +13,12 @@ import {
   clearRevisionNotifications,
 } from '@/store/features/revision-slice';
 import {
-  BrainCircuit,
+  BookOpen,
   Mic,
   Square,
   UploadCloud,
   FileText,
   Clock,
-  Calendar,
-  Sparkles,
   CheckCircle2,
   AlertTriangle,
   Trash2,
@@ -28,10 +26,7 @@ import {
   ChevronDown,
   ChevronUp,
   Award,
-  Zap,
   RotateCcw,
-  BookOpen,
-  Volume2,
 } from 'lucide-react';
 
 export default function RevisionPage() {
@@ -40,7 +35,6 @@ export default function RevisionPage() {
     topics,
     dueTopics,
     isLoadingTopics,
-    isLoadingDueTopics,
     isLogging,
     isReviewing,
     error,
@@ -93,7 +87,6 @@ export default function RevisionPage() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      // Determine best supported mime type
       const mimeTypes = [
         'audio/webm;codecs=opus',
         'audio/webm',
@@ -131,7 +124,7 @@ export default function RevisionPage() {
     } catch (err: any) {
       setRecordingError(
         err.name === 'NotAllowedError'
-          ? 'Microphone access was denied. Please allow microphone permissions or upload an audio file.'
+          ? 'Microphone access was denied. Please check permissions or upload an audio file.'
           : 'Could not access microphone: ' + (err.message || 'Unknown error')
       );
     }
@@ -183,14 +176,12 @@ export default function RevisionPage() {
     dispatch(fetchDueRevisionTopics());
   };
 
-  // Format seconds to mm:ss
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Helper for relative date
   const formatDueDate = (dateStr: string) => {
     const due = new Date(dateStr);
     const now = new Date();
@@ -208,31 +199,19 @@ export default function RevisionPage() {
     }
   };
 
-  // Understanding score helper
   const getScoreBadge = (score: number) => {
-    const colors: Record<number, string> = {
-      0: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-      1: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-      2: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-      3: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-      4: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
-      5: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+    const badges: Record<number, { bg: string; text: string; label: string }> = {
+      0: { bg: 'bg-rose-50 border-rose-200', text: 'text-rose-700', label: 'Blank (0/5)' },
+      1: { bg: 'bg-orange-50 border-orange-200', text: 'text-orange-700', label: 'Weak (1/5)' },
+      2: { bg: 'bg-amber-50 border-amber-200', text: 'text-amber-700', label: 'Hard (2/5)' },
+      3: { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-700', label: 'Good (3/5)' },
+      4: { bg: 'bg-cyan-50 border-cyan-200', text: 'text-cyan-700', label: 'Strong (4/5)' },
+      5: { bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-700', label: 'Mastered (5/5)' },
     };
-    const labels: Record<number, string> = {
-      0: 'Recall Blank (0/5)',
-      1: 'Weak (1/5)',
-      2: 'Fragmented (2/5)',
-      3: 'Good (3/5)',
-      4: 'Strong (4/5)',
-      5: 'Mastered (5/5)',
-    };
+    const b = badges[score] || badges[3];
     return (
-      <span
-        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
-          colors[score] || colors[3]
-        }`}
-      >
-        {labels[score] || `Score: ${score}/5`}
+      <span className={`px-2 py-0.5 rounded text-[11px] font-medium border ${b.bg} ${b.text}`}>
+        {b.label}
       </span>
     );
   };
@@ -240,36 +219,34 @@ export default function RevisionPage() {
   const displayedTopics = activeTab === 'due' ? dueTopics : topics;
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Spaced-Repetition System (SM-2 Algorithm)</span>
+          <div className="flex items-center gap-2 text-xs font-medium text-[#2563EB] mb-1">
+            <BookOpen className="w-4 h-4" />
+            <span>Spaced-Repetition Knowledge Tracking</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
-            <BrainCircuit className="w-8 h-8 text-cyan-400" />
-            <span>Revision Command Center</span>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] tracking-tight">
+            Revision Studio
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-            Speak or write what you just studied. Gemini transcribes, extracts key concepts, scores your understanding, and schedules optimal spaced-repetition intervals.
+          <p className="text-xs sm:text-sm text-[#64748B] mt-1 max-w-2xl">
+            Log study sessions via spoken audio or typed notes. The platform extracts core principles and calculates automated SM-2 review intervals.
           </p>
         </div>
 
-        {/* Due topics badge count */}
         {dueTopics.length > 0 && (
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 animate-pulse" />
+          <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-200 flex items-center gap-3 self-start sm:self-auto">
+            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
             <div>
-              <p className="text-xs font-semibold text-amber-300">
-                {dueTopics.length} {dueTopics.length === 1 ? 'Topic' : 'Topics'} Due for Revision!
+              <p className="text-xs font-semibold text-amber-900">
+                {dueTopics.length} {dueTopics.length === 1 ? 'Topic' : 'Topics'} Due for Review
               </p>
               <button
                 onClick={() => setActiveTab('due')}
-                className="text-[11px] text-amber-400 hover:underline font-medium mt-0.5"
+                className="text-[11px] text-amber-700 hover:text-amber-900 hover:underline font-medium"
               >
-                View due topics →
+                Review items now →
               </button>
             </div>
           </div>
@@ -278,14 +255,14 @@ export default function RevisionPage() {
 
       {/* Notification banner */}
       {successNotification && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs text-emerald-400">
+        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs text-emerald-800">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
             <span>{successNotification}</span>
           </div>
           <button
             onClick={() => dispatch(clearRevisionNotifications())}
-            className="text-emerald-500 hover:text-white"
+            className="text-emerald-700 hover:text-emerald-900 font-bold"
           >
             ×
           </button>
@@ -293,14 +270,14 @@ export default function RevisionPage() {
       )}
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-between text-xs text-rose-400">
+        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-between text-xs text-rose-800">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
             <span>{error}</span>
           </div>
           <button
             onClick={() => dispatch(clearRevisionNotifications())}
-            className="text-rose-500 hover:text-white"
+            className="text-rose-700 hover:text-rose-900 font-bold"
           >
             ×
           </button>
@@ -308,32 +285,32 @@ export default function RevisionPage() {
       )}
 
       {/* Study Session Logger Card */}
-      <div className="p-6 sm:p-8 rounded-3xl border border-cyan-500/30 bg-gradient-to-b from-[#0e1628] to-[#090e1a] shadow-2xl space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
           <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-base font-bold text-white">Log What You Just Studied</h2>
+            <FileText className="w-4 h-4 text-[#2563EB]" />
+            <h2 className="text-sm font-bold text-[#0F172A]">Log Study Material</h2>
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs">
+          <div className="flex bg-slate-100 p-1 rounded-lg border border-[#E2E8F0] text-xs">
             <button
               onClick={() => setLogMode('audio')}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors font-medium ${
+              className={`px-3 py-1 rounded-md flex items-center gap-1.5 transition-all font-medium ${
                 logMode === 'audio'
-                  ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white text-[#0F172A] shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
               }`}
             >
               <Mic className="w-3.5 h-3.5" />
-              <span>Voice Note</span>
+              <span>Voice Dictation</span>
             </button>
             <button
               onClick={() => setLogMode('text')}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors font-medium ${
+              className={`px-3 py-1 rounded-md flex items-center gap-1.5 transition-all font-medium ${
                 logMode === 'text'
-                  ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white text-[#0F172A] shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -344,24 +321,20 @@ export default function RevisionPage() {
 
         {/* 1. Voice Audio Mode */}
         {logMode === 'audio' && (
-          <div className="space-y-6">
-            <div className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-dashed border-cyan-500/30 bg-slate-900/40 text-center space-y-4">
-              {/* Mic / Wave Animation */}
+          <div className="space-y-4">
+            <div className="flex flex-col items-center justify-center p-8 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-center space-y-3">
               <div className="relative">
-                {isRecording && (
-                  <div className="absolute inset-0 rounded-full bg-rose-500 animate-ping opacity-40" />
-                )}
                 <button
                   onClick={isRecording ? stopRecording : startRecording}
                   disabled={isLogging}
-                  className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-2xl transition-all ${
+                  className={`w-14 h-14 rounded-full flex items-center justify-center shadow-sm transition-colors ${
                     isRecording
-                      ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/40 scale-110'
-                      : 'bg-gradient-to-tr from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-cyan-500/30'
+                      ? 'bg-rose-600 hover:bg-rose-700 text-white animate-pulse'
+                      : 'bg-[#2563EB] hover:bg-[#1D4ED8] text-white'
                   }`}
                   title={isRecording ? 'Click to stop recording' : 'Click to start speaking'}
                 >
-                  {isRecording ? <Square className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+                  {isRecording ? <Square className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                 </button>
               </div>
 
@@ -369,32 +342,32 @@ export default function RevisionPage() {
               <div>
                 {isRecording ? (
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-rose-400 animate-pulse">
+                    <p className="text-xs font-semibold text-rose-600">
                       Recording Spoken Explanation...
                     </p>
-                    <p className="text-2xl font-mono font-bold text-white">
+                    <p className="text-xl font-mono font-bold text-[#0F172A]">
                       {formatTime(recordingDuration)}
                     </p>
-                    <p className="text-xs text-slate-400">
-                      Explain the topic in your own words. Click the square when finished.
+                    <p className="text-[11px] text-[#64748B]">
+                      Explain key concepts clearly. Click the square icon to finish.
                     </p>
                   </div>
                 ) : audioBlob ? (
                   <div className="space-y-2">
-                    <p className="text-sm font-semibold text-emerald-400">
-                      Audio Recording Ready! ({formatTime(recordingDuration)})
+                    <p className="text-xs font-semibold text-emerald-700">
+                      Audio Recording Ready ({formatTime(recordingDuration)})
                     </p>
                     {audioUrl && (
-                      <audio controls src={audioUrl} className="mx-auto mt-2 h-10 w-64 sm:w-80" />
+                      <audio controls src={audioUrl} className="mx-auto mt-1 h-9 w-64 sm:w-80" />
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-slate-200">
-                      Click the microphone to speak about what you studied
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-semibold text-[#0F172A]">
+                      Click microphone to dictate what you studied
                     </p>
-                    <p className="text-xs text-slate-500 max-w-md mx-auto">
-                      Gemini transcribes and extracts key points directly from your audio in one step.
+                    <p className="text-[11px] text-[#64748B] max-w-sm mx-auto">
+                      Voice notes are transcribed and analyzed to create flashcards and scheduling intervals.
                     </p>
                   </div>
                 )}
@@ -402,21 +375,21 @@ export default function RevisionPage() {
 
               {/* Audio Actions */}
               {audioBlob && !isRecording && (
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
                   <button
                     onClick={handleSubmitAudio}
                     disabled={isLogging}
-                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-cyan-500/25 flex items-center gap-2 transition-all disabled:opacity-50"
+                    className="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-xs sm:text-sm flex items-center gap-1.5 transition-colors shadow-xs disabled:opacity-50"
                   >
                     {isLogging ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Analyzing with Gemini...</span>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Processing with Model...</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4" />
-                        <span>Analyze & Schedule Revision</span>
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Submit & Schedule Interval</span>
                       </>
                     )}
                   </button>
@@ -426,7 +399,7 @@ export default function RevisionPage() {
                       setAudioUrl(null);
                       setRecordingDuration(0);
                     }}
-                    className="px-4 py-2.5 rounded-xl border border-slate-800 hover:bg-slate-800 text-slate-400 text-sm"
+                    className="px-3 py-2 rounded-lg border border-[#E2E8F0] hover:bg-slate-50 text-[#64748B] hover:text-[#0F172A] text-xs font-medium transition-colors"
                   >
                     Discard
                   </button>
@@ -435,7 +408,7 @@ export default function RevisionPage() {
 
               {/* Upload alternative */}
               {!isRecording && !audioBlob && (
-                <div className="pt-2">
+                <div className="pt-1">
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -446,16 +419,16 @@ export default function RevisionPage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-xs text-cyan-400 hover:underline flex items-center gap-1.5 mx-auto"
+                    className="text-xs text-[#2563EB] hover:underline flex items-center gap-1.5 mx-auto font-medium"
                   >
-                    <UploadCloud className="w-4 h-4" />
-                    <span>Or upload a recorded audio file (webm, wav, mp3 up to 15MB)</span>
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>Upload pre-recorded audio (webm, wav, mp3 up to 15MB)</span>
                   </button>
                 </div>
               )}
 
               {recordingError && (
-                <p className="text-xs text-rose-400 mt-2">{recordingError}</p>
+                <p className="text-xs text-rose-600 mt-1">{recordingError}</p>
               )}
             </div>
           </div>
@@ -463,32 +436,32 @@ export default function RevisionPage() {
 
         {/* 2. Typed Text Mode */}
         {logMode === 'text' && (
-          <form onSubmit={handleSubmitText} className="space-y-4">
+          <form onSubmit={handleSubmitText} className="space-y-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                What did you study? (Explain concepts, definitions, or insights)
+              <label className="block text-xs font-semibold text-[#0F172A] mb-1.5">
+                Topic Notes & Explanations
               </label>
               <textarea
-                rows={5}
+                rows={4}
                 required
                 value={typedNotes}
                 onChange={(e) => setTypedNotes(e.target.value)}
-                placeholder="Today I learned that mitochondria are the powerhouse of the cell. They generate ATP through cellular respiration and have their own circular DNA..."
-                className="w-full p-4 rounded-xl bg-slate-900 border border-slate-800 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                placeholder="Explain the concepts, definitions, and technical insights you studied today..."
+                className="w-full p-3 rounded-lg bg-white border border-[#E2E8F0] text-xs sm:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-colors"
               />
             </div>
 
             {/* Quick Templates */}
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="text-slate-500">Quick prompts:</span>
+              <span className="text-[#64748B]">Examples:</span>
               <button
                 type="button"
                 onClick={() =>
                   setTypedNotes(
-                    'Today I learned about React useMemo and useCallback hooks. useMemo caches the result of a calculation between re-renders, while useCallback caches a function definition.'
+                    'Today I learned about React useMemo and useCallback hooks. useMemo caches calculation results between re-renders, while useCallback caches a function definition.'
                   )
                 }
-                className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-cyan-300 transition-colors"
+                className="px-2.5 py-1 rounded-md bg-slate-50 border border-[#E2E8F0] text-[#0F172A] hover:bg-slate-100 transition-colors text-[11px]"
               >
                 React Hooks
               </button>
@@ -499,7 +472,7 @@ export default function RevisionPage() {
                     'Today I studied the SuperMemo SM-2 spaced repetition algorithm. It calculates repetitions, interval in days, and an ease factor from 1.3 to 2.5 based on recall quality.'
                   )
                 }
-                className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-cyan-300 transition-colors"
+                className="px-2.5 py-1 rounded-md bg-slate-50 border border-[#E2E8F0] text-[#0F172A] hover:bg-slate-100 transition-colors text-[11px]"
               >
                 SM-2 Algorithm
               </button>
@@ -508,17 +481,17 @@ export default function RevisionPage() {
             <button
               type="submit"
               disabled={isLogging || !typedNotes.trim()}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-cyan-500/25 flex items-center gap-2 transition-all disabled:opacity-50"
+              className="px-4 py-2.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-xs sm:text-sm flex items-center gap-1.5 transition-colors shadow-xs disabled:opacity-50"
             >
               {isLogging ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Analyzing with Gemini...</span>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Processing Notes...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4" />
-                  <span>Analyze & Schedule Spaced Repetition</span>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Analyze & Save to Deck</span>
                 </>
               )}
             </button>
@@ -527,37 +500,37 @@ export default function RevisionPage() {
       </div>
 
       {/* Topics List Header & Tab Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold text-white">Tracked Revision Topics</h2>
-          <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-slate-800 text-slate-300">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] pb-3">
+        <div className="flex items-center gap-2.5">
+          <h2 className="text-sm font-bold text-[#0F172A]">Tracked Knowledge Topics</h2>
+          <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-[#64748B] border border-slate-200">
             {topics.length} Total
           </span>
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+        <div className="flex bg-slate-100 p-1 rounded-lg border border-[#E2E8F0] text-xs">
           <button
             onClick={() => setActiveTab('all')}
-            className={`px-3 py-1.5 rounded-lg transition-colors font-medium ${
+            className={`px-3 py-1 rounded-md transition-all font-medium ${
               activeTab === 'all'
-                ? 'bg-cyan-500 text-white font-semibold shadow'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-white text-[#0F172A] shadow-xs'
+                : 'text-[#64748B] hover:text-[#0F172A]'
             }`}
           >
             All Topics ({topics.length})
           </button>
           <button
             onClick={() => setActiveTab('due')}
-            className={`px-3 py-1.5 rounded-lg transition-colors font-medium flex items-center gap-1.5 ${
+            className={`px-3 py-1 rounded-md transition-all font-medium flex items-center gap-1.5 ${
               activeTab === 'due'
-                ? 'bg-amber-500 text-slate-950 font-semibold shadow'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-white text-amber-900 shadow-xs'
+                : 'text-[#64748B] hover:text-[#0F172A]'
             }`}
           >
             <span>Due Now</span>
             {dueTopics.length > 0 && (
-              <span className="w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] flex items-center justify-center">
+              <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[10px] flex items-center justify-center font-bold">
                 {dueTopics.length}
               </span>
             )}
@@ -567,26 +540,26 @@ export default function RevisionPage() {
 
       {/* Topics Grid */}
       {isLoadingTopics && topics.length === 0 ? (
-        <div className="py-20 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
-          <p className="text-xs text-slate-400">Loading revision topics...</p>
+        <div className="py-20 flex flex-col items-center justify-center space-y-2">
+          <Loader2 className="w-6 h-6 text-[#2563EB] animate-spin" />
+          <p className="text-xs text-[#64748B]">Loading tracked topics...</p>
         </div>
       ) : displayedTopics.length === 0 ? (
-        <div className="p-12 rounded-3xl border border-slate-800/80 bg-slate-900/30 text-center space-y-3">
-          <BrainCircuit className="w-12 h-12 text-slate-600 mx-auto" />
-          <h3 className="text-base font-semibold text-slate-300">
+        <div className="p-12 rounded-lg border border-[#E2E8F0] bg-white text-center space-y-2 shadow-sm">
+          <BookOpen className="w-8 h-8 text-slate-300 mx-auto" />
+          <h3 className="text-sm font-semibold text-[#0F172A]">
             {activeTab === 'due'
-              ? 'No topics currently due for revision!'
+              ? 'No topics currently due for review'
               : 'No study topics logged yet'}
           </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-xs text-[#64748B] max-w-sm mx-auto">
             {activeTab === 'due'
-              ? 'You are all caught up! Great job maintaining your spaced repetition intervals.'
-              : 'Speak or write about any topic above to kick off automatic spaced repetition.'}
+              ? 'All items are currently within their retention threshold.'
+              : 'Dictate or type your first study session above to initialize automated SM-2 spaced repetition.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {displayedTopics.map((topic) => {
             const dueInfo = formatDueDate(topic.nextRevisionAt);
             const isExpanded = expandedTopicId === topic._id;
@@ -596,55 +569,54 @@ export default function RevisionPage() {
             return (
               <div
                 key={topic._id}
-                className={`p-6 rounded-2xl border transition-all flex flex-col justify-between space-y-4 ${
+                className={`p-5 rounded-lg border transition-all flex flex-col justify-between space-y-4 shadow-sm bg-white ${
                   dueInfo.isDue
-                    ? 'border-amber-500/40 bg-gradient-to-b from-[#181512] to-[#0c101d] shadow-amber-500/5'
-                    : 'border-slate-800 bg-[#0c1222] hover:border-cyan-500/30 shadow-lg'
+                    ? 'border-amber-300 bg-amber-50/20'
+                    : 'border-[#E2E8F0] hover:border-slate-300'
                 }`}
               >
                 <div className="space-y-3">
                   {/* Top Row: Title & Due Status */}
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-base font-bold text-white hover:text-cyan-300 transition-colors">
+                      <h3 className="text-sm font-bold text-[#0F172A]">
                         {topic.title}
                       </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div
-                          className={`flex items-center gap-1 text-[11px] font-medium ${
-                            dueInfo.isDue ? 'text-amber-400 font-semibold' : 'text-slate-400'
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <span
+                          className={`text-xs font-medium ${
+                            dueInfo.isDue ? 'text-amber-700 font-semibold' : 'text-[#64748B]'
                           }`}
                         >
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>{dueInfo.text}</span>
-                        </div>
+                          {dueInfo.text}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Understanding score badge */}
                     {latestHistory && getScoreBadge(latestHistory.understandingScore)}
                   </div>
 
                   {/* Latest Summary */}
                   {topic.latestSummary && (
-                    <p className="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
+                    <p className="text-xs text-slate-700 leading-relaxed bg-[#F8FAFC] p-3 rounded-lg border border-[#E2E8F0]">
                       {topic.latestSummary}
                     </p>
                   )}
 
                   {/* Key Points */}
                   {latestHistory?.keyPoints && latestHistory.keyPoints.length > 0 && (
-                    <div className="space-y-1.5">
-                      <p className="text-[11px] font-mono text-cyan-400 uppercase tracking-wider">
-                        Key Concepts Identified
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                        Key Points
                       </p>
                       <ul className="space-y-1">
                         {latestHistory.keyPoints.map((pt, idx) => (
                           <li
                             key={idx}
-                            className="text-xs text-slate-400 flex items-start gap-1.5"
+                            className="text-xs text-slate-600 flex items-start gap-1.5"
                           >
-                            <span className="text-cyan-400 mt-0.5">•</span>
+                            <span className="text-[#2563EB] mt-0.5">•</span>
                             <span>{pt}</span>
                           </li>
                         ))}
@@ -653,34 +625,34 @@ export default function RevisionPage() {
                   )}
 
                   {/* SM-2 Metrics Strip */}
-                  <div className="grid grid-cols-3 gap-2 pt-2 text-center text-[11px] font-mono">
-                    <div className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-400">
-                      <span className="block text-slate-500 text-[10px]">Repetitions</span>
-                      <span className="text-white font-bold">{topic.repetitions}</span>
+                  <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+                    <div className="p-2 rounded-lg bg-slate-50 border border-[#E2E8F0]">
+                      <span className="block text-[#64748B] text-[10px]">Repetitions</span>
+                      <span className="text-xs font-bold text-[#0F172A]">{topic.repetitions}</span>
                     </div>
-                    <div className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-400">
-                      <span className="block text-slate-500 text-[10px]">Interval</span>
-                      <span className="text-cyan-300 font-bold">{topic.intervalDays}d</span>
+                    <div className="p-2 rounded-lg bg-slate-50 border border-[#E2E8F0]">
+                      <span className="block text-[#64748B] text-[10px]">Interval</span>
+                      <span className="text-xs font-bold text-[#2563EB]">{topic.intervalDays}d</span>
                     </div>
-                    <div className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-400">
-                      <span className="block text-slate-500 text-[10px]">Ease Factor</span>
-                      <span className="text-indigo-300 font-bold">{topic.easeFactor.toFixed(2)}</span>
+                    <div className="p-2 rounded-lg bg-slate-50 border border-[#E2E8F0]">
+                      <span className="block text-[#64748B] text-[10px]">Ease Factor</span>
+                      <span className="text-xs font-bold text-[#0F172A]">{topic.easeFactor.toFixed(2)}</span>
                     </div>
                   </div>
 
                   {/* Expanded History Entries */}
                   {isExpanded && topic.history && topic.history.length > 0 && (
-                    <div className="pt-3 border-t border-slate-800 space-y-3">
-                      <p className="text-[11px] font-mono text-slate-400 uppercase">
-                        Study Session History ({topic.history.length})
+                    <div className="pt-3 border-t border-[#E2E8F0] space-y-2">
+                      <p className="text-[11px] font-semibold text-[#64748B] uppercase">
+                        Session History ({topic.history.length})
                       </p>
-                      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                      <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
                         {topic.history.map((h, hIdx) => (
                           <div
                             key={hIdx}
-                            className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800/80 text-[11px] space-y-1"
+                            className="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-[11px] space-y-1"
                           >
-                            <div className="flex justify-between text-slate-500">
+                            <div className="flex justify-between text-[#64748B]">
                               <span>
                                 {new Date(h.studiedAt).toLocaleDateString()}{' '}
                                 {new Date(h.studiedAt).toLocaleTimeString([], {
@@ -688,9 +660,9 @@ export default function RevisionPage() {
                                   minute: '2-digit',
                                 })}
                               </span>
-                              <span className="text-cyan-400">Score: {h.understandingScore}/5</span>
+                              <span className="text-[#2563EB] font-medium">Score: {h.understandingScore}/5</span>
                             </div>
-                            <p className="text-slate-300 italic truncate">"{h.transcript}"</p>
+                            <p className="text-slate-700 italic truncate">"{h.transcript}"</p>
                           </div>
                         ))}
                       </div>
@@ -699,33 +671,32 @@ export default function RevisionPage() {
                 </div>
 
                 {/* Bottom Action Bar */}
-                <div className="pt-2 border-t border-slate-800/60 flex flex-col gap-2">
-                  {/* Active Review Quality Score Selector */}
+                <div className="pt-2 border-t border-[#E2E8F0] flex flex-col gap-2">
                   {isReviewModalOpen ? (
-                    <div className="p-3 rounded-xl bg-slate-900 border border-cyan-500/40 space-y-2">
+                    <div className="p-3 rounded-lg bg-slate-50 border border-blue-200 space-y-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-white">How well did you recall this?</span>
+                        <span className="font-semibold text-[#0F172A]">Recall Evaluation (Quality 0-5)</span>
                         <button
                           onClick={() => dispatch(setActiveTopicForReview(null))}
-                          className="text-slate-500 hover:text-white"
+                          className="text-[#64748B] hover:text-[#0F172A]"
                         >
                           Cancel
                         </button>
                       </div>
-                      <div className="grid grid-cols-6 gap-1 text-center text-xs">
+                      <div className="grid grid-cols-6 gap-1 text-center">
                         {[
-                          { q: 0, label: '0: Blank', color: 'hover:bg-rose-500/30' },
-                          { q: 1, label: '1: Wrong', color: 'hover:bg-rose-500/20' },
-                          { q: 2, label: '2: Hard', color: 'hover:bg-amber-500/20' },
-                          { q: 3, label: '3: Good', color: 'hover:bg-sky-500/20' },
-                          { q: 4, label: '4: Easy', color: 'hover:bg-cyan-500/20' },
-                          { q: 5, label: '5: Perfect', color: 'hover:bg-emerald-500/20' },
+                          { q: 0, label: '0: Blank' },
+                          { q: 1, label: '1: Wrong' },
+                          { q: 2, label: '2: Hard' },
+                          { q: 3, label: '3: Good' },
+                          { q: 4, label: '4: Easy' },
+                          { q: 5, label: '5: Perfect' },
                         ].map((btn) => (
                           <button
                             key={btn.q}
                             disabled={isReviewing}
                             onClick={() => handleReviewScore(topic._id, btn.q)}
-                            className={`p-1.5 rounded-lg border border-slate-800 bg-slate-950 text-slate-200 text-[10px] font-medium transition-colors ${btn.color}`}
+                            className="p-1.5 rounded bg-white hover:bg-blue-50 text-[#0F172A] border border-[#E2E8F0] hover:border-blue-300 text-[10px] font-medium transition-colors"
                           >
                             {btn.label}
                           </button>
@@ -736,23 +707,23 @@ export default function RevisionPage() {
                     <div className="flex items-center justify-between">
                       <button
                         onClick={() => dispatch(setActiveTopicForReview(topic._id))}
-                        className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${
                           dueInfo.isDue
-                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-amber-500/20 hover:brightness-110'
-                            : 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40'
+                            ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-xs'
+                            : 'bg-white hover:bg-slate-50 text-[#2563EB] border border-blue-200'
                         }`}
                       >
                         <Award className="w-3.5 h-3.5" />
-                        <span>{dueInfo.isDue ? 'Review Now' : 'Self Quiz / Review'}</span>
+                        <span>{dueInfo.isDue ? 'Review Now' : 'Self Quiz'}</span>
                       </button>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         {topic.history && topic.history.length > 0 && (
                           <button
                             onClick={() =>
                               setExpandedTopicId(isExpanded ? null : topic._id)
                             }
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-xs flex items-center gap-1 transition-colors"
+                            className="px-2 py-1 rounded-md text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100 text-xs flex items-center gap-1 transition-colors"
                             title="Toggle history"
                           >
                             <span>History</span>
@@ -765,7 +736,7 @@ export default function RevisionPage() {
                         )}
                         <button
                           onClick={() => dispatch(deleteTopic(topic._id))}
-                          className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                          className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                           title="Delete topic"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

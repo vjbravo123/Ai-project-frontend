@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: 'NEO AI | NestJS + Gemini Command Center',
-  description: 'Full-stack AI interface for Gemini LangChain chat, Vision, Autonomous Newsletter Agent, and Spaced-Repetition Revision',
+  title: 'Workspace | Enterprise Intelligence Platform',
+  description: 'Unified enterprise workspace for conversational intelligence, document analysis, research, and spaced-repetition knowledge tracking.',
 };
 
 export default function RootLayout({
@@ -18,8 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} ${mono.variable} font-sans bg-[#070b14] text-slate-100 min-h-screen antialiased selection:bg-cyan-500/30 selection:text-cyan-200`}>
+    <html lang="en">
+      <body
+        className={`${inter.variable} ${mono.variable} font-sans bg-[#F1F5F9] text-[#0F172A] min-h-screen antialiased selection:bg-blue-100 selection:text-blue-900`}
+      >
         <Providers>
           <AppShell>{children}</AppShell>
         </Providers>

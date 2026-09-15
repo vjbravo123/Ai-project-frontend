@@ -10,19 +10,17 @@ import { cn } from '@/lib/utils';
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, sidebarOpen } = useAppSelector((state) => state.auth);
 
-  // If unauthenticated, show Register/Login/OTP view first
   if (!isAuthenticated) {
     return <AuthView />;
   }
 
-  // Once authenticated, show full application shell with collapsible sidebar & header
   return (
-    <div className="flex min-h-screen bg-[#070b14]">
+    <div className="flex min-h-screen bg-[#F1F5F9] text-[#0F172A]">
       <Sidebar />
       <div
         className={cn(
-          'flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out',
-          sidebarOpen ? 'lg:pl-64' : 'lg:pl-20',
+          'flex-1 flex flex-col min-h-screen transition-all duration-200 ease-in-out',
+          sidebarOpen ? 'lg:pl-60' : 'lg:pl-[68px]',
           'pl-0'
         )}
       >
