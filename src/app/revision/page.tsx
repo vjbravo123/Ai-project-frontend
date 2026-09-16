@@ -145,6 +145,9 @@ export default function RevisionPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
       setAudioBlob(file);
       const url = URL.createObjectURL(file);
       setAudioUrl(url);
@@ -155,6 +158,9 @@ export default function RevisionPage() {
   const handleSubmitAudio = async () => {
     if (!audioBlob) return;
     await dispatch(logStudyAudio(audioBlob));
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
     setAudioBlob(null);
     setAudioUrl(null);
     setRecordingDuration(0);

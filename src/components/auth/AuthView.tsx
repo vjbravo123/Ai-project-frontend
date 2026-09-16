@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   loginUser,
@@ -21,7 +22,6 @@ import {
   CheckCircle2,
   RefreshCw,
   ShieldCheck,
-  Layers,
   HelpCircle,
 } from 'lucide-react';
 
@@ -89,15 +89,22 @@ export const AuthView = () => {
       <div className="w-full max-w-md space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-11 h-11 rounded-lg bg-[#2563EB] text-white shadow-sm mb-1">
-            <Layers className="w-6 h-6" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-slate-200 shadow-sm p-1.5 mb-1">
+            <Image
+              src="/logo.png"
+              alt="JoshAi Logo"
+              width={52}
+              height={52}
+              className="w-full h-full object-contain"
+              priority
+            />
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] tracking-tight">
-              Nexus Enterprise Workspace
+              JoshAi Workspace
             </h1>
             <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-              Sign in to access your intelligence and research platform
+              Sign in to access your intelligent AI productivity workspace
             </p>
           </div>
         </div>

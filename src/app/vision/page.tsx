@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { describeImage, setImagePreview, setVisionInstruction, resetVisionState } from '@/store/features/vision-slice';
 import { UploadCloud, ScanEye, Copy, Check, Loader2, RotateCcw } from 'lucide-react';
@@ -15,13 +15,33 @@ export default function VisionPage() {
   const [copied, setCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Revoke object URL on unmount or replacement to avoid browser memory leaks
+  useEffect(() => {
+    return () => {
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl);
+      }
+    };
+  }, [imagePreviewUrl]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl);
+      }
       setSelectedFile(file);
       const previewUrl = URL.createObjectURL(file);
       dispatch(setImagePreview(previewUrl));
     }
+  };
+
+  const handleReset = () => {
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+    }
+    setSelectedFile(null);
+    dispatch(resetVisionState());
   };
 
   const handleRunVision = () => {
@@ -110,7 +130,7 @@ export default function VisionPage() {
               )}
             </button>
             <button
-              onClick={() => { setSelectedFile(null); dispatch(resetVisionState()); }}
+              onClick={handleReset}
               className="px-3 py-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />

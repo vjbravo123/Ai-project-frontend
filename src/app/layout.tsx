@@ -24,17 +24,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
   title: {
-    default: 'JoshAI — Your AI Productivity Workspace',
-    template: '%s | JoshAI',
+    default: 'JoshAi — Your AI Productivity Workspace',
+    template: '%s | JoshAi',
   },
 
   description:
-    'JoshAI is an AI-powered productivity workspace for intelligent conversations, image analysis, personalized newsletters, and spaced-repetition learning.',
+    'JoshAi is an AI-powered productivity workspace for intelligent conversations, image analysis, personalized newsletters, and spaced-repetition learning.',
 
-  applicationName: 'JoshAI',
+  applicationName: 'JoshAi',
 
   keywords: [
-    'JoshAI',
+    'JoshAi',
     'AI productivity',
     'AI assistant',
     'AI workspace',
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 
   authors: [{ name: 'Vivek Joshi' }],
   creator: 'Vivek Joshi',
-  publisher: 'JoshAI',
+  publisher: 'JoshAi',
 
   category: 'productivity',
 
@@ -57,7 +57,9 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: '/logo.png',
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+    ],
     apple: '/logo.png',
   },
 
@@ -65,21 +67,21 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: siteUrl,
-    siteName: 'JoshAI',
-    title: 'JoshAI — Your AI Productivity Workspace',
+    siteName: 'JoshAi',
+    title: 'JoshAi — Your AI Productivity Workspace',
     description:
-      'Chat, analyze images, create intelligent newsletters, and learn smarter with AI.',
+      'Chat, analyze images, create intelligent newsletters, and learn smarter with JoshAi.',
     images: [
       {
         url: '/logo.png',
-        alt: 'JoshAI Logo',
+        alt: 'JoshAi Logo',
       },
     ],
   },
 
   twitter: {
     card: 'summary',
-    title: 'JoshAI — Your AI Productivity Workspace',
+    title: 'JoshAi — Your AI Productivity Workspace',
     description:
       'An AI-powered workspace for conversations, image analysis, newsletters, and smarter learning.',
     images: ['/logo.png'],
@@ -108,7 +110,7 @@ export const viewport: Viewport = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'JoshAI',
+  name: 'JoshAi',
   applicationCategory: 'ProductivityApplication',
   operatingSystem: 'Web',
   description:

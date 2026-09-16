@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
+import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchConversations,
@@ -18,7 +19,6 @@ import {
   Loader2,
   PanelLeftOpen,
   X,
-  Hexagon,
 } from 'lucide-react';
 
 export default function ChatPage() {
@@ -160,10 +160,16 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto px-3 sm:px-5 py-4 space-y-3">
           {currentMessages.data.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center max-w-sm mx-auto space-y-3 p-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
-                <MessageSquare className="w-5 h-5" />
+              <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 shadow-sm p-1.5 flex items-center justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="JoshAi Logo"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <h3 className="text-sm font-bold text-slate-800">Start a Conversation</h3>
+              <h3 className="text-sm font-bold text-slate-800">Start a Conversation with JoshAi</h3>
               <p className="text-xs text-slate-500">
                 Type below to begin. All dialogue history is preserved per thread.
               </p>
@@ -188,8 +194,14 @@ export default function ChatPage() {
                   className={`flex gap-2 max-w-2xl ${isUser ? 'ml-auto justify-end' : 'mr-auto justify-start'}`}
                 >
                   {!isUser && (
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 mt-0.5">
-                      <Hexagon className="w-3.5 h-3.5" />
+                    <div className="w-7 h-7 rounded-lg overflow-hidden bg-white border border-slate-200 shadow-2xs flex items-center justify-center flex-shrink-0 mt-0.5 p-0.5">
+                      <Image
+                        src="/logo.png"
+                        alt="JoshAi"
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                   )}
                   <div
@@ -208,12 +220,18 @@ export default function ChatPage() {
 
           {sendingMessage && (
             <div className="flex gap-2 max-w-2xl mr-auto">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0">
-                <Hexagon className="w-3.5 h-3.5" />
+              <div className="w-7 h-7 rounded-lg overflow-hidden bg-white border border-slate-200 shadow-2xs flex items-center justify-center flex-shrink-0 p-0.5">
+                <Image
+                  src="/logo.png"
+                  alt="JoshAi"
+                  width={24}
+                  height={24}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2 text-xs text-slate-500 shadow-sm">
                 <Loader2 className="w-3.5 h-3.5 text-blue-500 animate-spin" />
-                <span>Thinking...</span>
+                <span>JoshAi is thinking...</span>
               </div>
             </div>
           )}

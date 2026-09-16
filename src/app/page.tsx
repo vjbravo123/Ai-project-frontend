@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   MessageSquare,
   ScanEye,
@@ -68,14 +69,28 @@ export default function HomePage() {
   return (
     <div className="p-3 sm:p-4 lg:p-5 space-y-4">
       {/* Hero Card */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-5 sm:p-6 text-white">
-        <p className="text-blue-200 text-xs font-medium mb-1">Intelligence Platform</p>
-        <h1 className="text-lg sm:text-xl font-bold tracking-tight">
-          Welcome to your Workspace
-        </h1>
-        <p className="text-blue-100 text-xs sm:text-sm mt-1 max-w-xl leading-relaxed">
-          Centralized tools for conversational AI, visual perception, content automation, and knowledge retention.
-        </p>
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-5 sm:p-6 text-white relative overflow-hidden shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-blue-200 text-xs font-semibold tracking-wide uppercase mb-1">Intelligence Platform</p>
+            <h1 className="text-lg sm:text-2xl font-bold tracking-tight">
+              Welcome to JoshAi Workspace
+            </h1>
+            <p className="text-blue-100 text-xs sm:text-sm mt-1 max-w-xl leading-relaxed">
+              Centralized tools for conversational AI, visual perception, content automation, and knowledge retention.
+            </p>
+          </div>
+          <div className="hidden sm:flex items-center justify-center w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 p-2 flex-shrink-0 shadow-inner">
+            <Image
+              src="/logo.png"
+              alt="JoshAi Logo"
+              width={48}
+              height={48}
+              className="w-full h-full object-contain drop-shadow-sm"
+              priority
+            />
+          </div>
+        </div>
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5">

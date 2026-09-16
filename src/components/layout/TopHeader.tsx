@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { checkHealth } from '@/store/features/health-slice';
 import { setSidebarOpen, logout } from '@/store/features/auth-slice';
@@ -9,11 +11,15 @@ import { LogOut, User, PanelLeft } from 'lucide-react';
 export const TopHeader = () => {
   const dispatch = useAppDispatch();
   const { status: healthStatus } = useAppSelector((state) => state.health);
-  const { isAuthenticated, user, sidebarOpen } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(checkHealth());
-    const interval = setInterval(() => dispatch(checkHealth()), 30000);
+    const interval = setInterval(() => {
+      if (typeof document === 'undefined' || document.visibilityState === 'visible') {
+        dispatch(checkHealth());
+      }
+    }, 30000);
     return () => clearInterval(interval);
   }, [dispatch]);
 
@@ -33,7 +39,7 @@ export const TopHeader = () => {
 
   return (
     <header className="h-14 border-b border-slate-200 bg-white px-4 sm:px-5 flex items-center justify-between sticky top-0 z-20">
-      {/* Left: Mobile sidebar open button + status */}
+      {/* Left: Mobile sidebar open button + Mobile Brand + status */}
       <div className="flex items-center gap-3">
         {/* Mobile-only sidebar open trigger */}
         <button
@@ -44,7 +50,21 @@ export const TopHeader = () => {
           <PanelLeft className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-2 text-xs text-slate-500">
+        {/* Mobile-only brand identifier */}
+        <Link href="/" className="flex items-center gap-2 lg:hidden">
+          <div className="w-6 h-6 rounded-md overflow-hidden bg-white border border-slate-200 p-0.5 shadow-2xs">
+            <Image
+              src="/logo.png"
+              alt="JoshAi"
+              width={24}
+              height={24}
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <span className="font-bold text-sm text-slate-800 tracking-tight">JoshAi</span>
+        </Link>
+
+        <div className="flex items-center gap-2 text-xs text-slate-500 pl-1">
           <span className={`w-2 h-2 rounded-full ${statusDot}`} />
           <span className="font-medium hidden sm:inline">{statusLabel}</span>
         </div>

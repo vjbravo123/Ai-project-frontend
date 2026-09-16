@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -11,7 +12,6 @@ import {
   GraduationCap,
   ChevronLeft,
   X,
-  Hexagon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -55,14 +55,21 @@ export const Sidebar = () => {
           <div className="flex items-center justify-between px-4 h-14 border-b border-slate-200 flex-shrink-0">
             {sidebarOpen ? (
               <>
-                <div className="flex items-center gap-2.5 overflow-hidden">
-                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
-                    <Hexagon className="w-4 h-4" />
+                <Link href="/" className="flex items-center gap-2.5 overflow-hidden group">
+                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg overflow-hidden bg-white border border-slate-200 p-0.5 shadow-2xs group-hover:border-blue-400 transition-colors">
+                    <Image
+                      src="/logo.png"
+                      alt="JoshAi Logo"
+                      width={32}
+                      height={32}
+                      className="w-full h-full object-contain"
+                      priority
+                    />
                   </div>
-                  <span className="font-bold text-sm text-slate-800 tracking-tight truncate">
-                    Nexus
+                  <span className="font-bold text-base text-slate-800 tracking-tight truncate group-hover:text-blue-600 transition-colors">
+                    JoshAi
                   </span>
-                </div>
+                </Link>
 
                 <div className="flex items-center gap-1 flex-shrink-0">
                   {/* Desktop collapse toggle, next to the brand */}
@@ -93,8 +100,15 @@ export const Sidebar = () => {
                 aria-label="Expand sidebar"
                 title="Expand sidebar"
               >
-                <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white hover:opacity-90 transition-opacity">
-                  <Hexagon className="w-4 h-4" />
+                <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg overflow-hidden bg-white border border-slate-200 p-0.5 shadow-2xs hover:border-blue-400 hover:opacity-90 transition-all">
+                  <Image
+                    src="/logo.png"
+                    alt="JoshAi Logo"
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-contain"
+                    priority
+                  />
                 </div>
               </button>
             )}
